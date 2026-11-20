@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- CSP: the page may only talk to itself and to Cloudflare Workers. CUSTOMIZE if you add a custom API domain. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.workers.dev; style-src 'self' 'unsafe-inline'; img-src 'self' data:" />
+    <title>Electrical Store</title>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
