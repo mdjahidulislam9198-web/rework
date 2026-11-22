@@ -19,6 +19,7 @@ function Products({ admin }: { admin: boolean }) {
   async function save(e: FormEvent) {
     e.preventDefault(); setErr('');
     const selling = parseBdt(f.selling), purchase = f.purchase ? parseBdt(f.purchase) : 0, min = f.min ? parseQty(f.min) : 0;
+    if (/\d/.test(f.unit)) return setErr('Unit must be a word such as pcs, m or kg. Quantities are not entered here.');
     if (selling === null || purchase === null || min === null) return setErr('Prices need up to 2 decimals, stock levels up to 3.');
     try {
       const body = { sku: f.sku, name: f.name, category: f.category, brand: f.brand, unit: f.unit, sellingPrice: selling, purchasePrice: purchase, minStock: min };
@@ -34,9 +35,11 @@ function Products({ admin }: { admin: boolean }) {
       {err && <p role="alert" className="text-sm text-red-700">{err}</p>}
       {admin && <form onSubmit={save} className="grid grid-cols-2 gap-2 rounded-md border border-slate-200 bg-white p-3 sm:grid-cols-4">
         <h3 className="col-span-full font-medium">{f.id ? 'Edit product' : 'Add product'}</h3>
+        <p className="col-span-full text-xs text-slate-500">Stock quantity is not typed here. It comes from purchases (Phase 4) or opening balances (Phase 5). Use the Adjust stock tab only to correct damaged, lost or miscounted items.</p>
         <input className={box} placeholder="SKU / code" value={f.sku} onChange={set('sku')} required />
         <input className={box + ' col-span-1 sm:col-span-2'} placeholder="Name" value={f.name} onChange={set('name')} required />
-        <input className={box} placeholder="Unit (pcs, m, kg…)" value={f.unit} onChange={set('unit')} required />
+        <div><label className="block text-xs text-slate-500">Unit of measure (a word, not a quantity)</label><input className={box + ' w-full'} list="units" placeholder="pcs, m, kg, box" value={f.unit} onChange={set('unit')} required />
+          <datalist id="units">{['pcs', 'm', 'ft', 'kg', 'box', 'roll', 'set', 'pair', 'pack', 'ltr'].map(u => <option key={u} value={u} />)}</datalist></div>
         <input className={box} placeholder="Category" value={f.category} onChange={set('category')} />
         <input className={box} placeholder="Brand" value={f.brand} onChange={set('brand')} />
         <input className={box} placeholder="Purchase price ৳" inputMode="decimal" value={f.purchase} onChange={set('purchase')} />
@@ -53,7 +56,7 @@ function Products({ admin }: { admin: boolean }) {
         <thead><tr className="border-b"><th className="p-2">Product</th><th>Stock</th><th>Selling</th>{admin && <><th>Purchase</th><th>Avg cost</th><th>Value</th><th></th></>}</tr></thead>
         <tbody>{list.map(p => (<tr key={p.productId} className={'border-b ' + (p.isActive ? '' : 'opacity-50')}>
           <td className="p-2">{p.name}<div className="text-slate-500">{p.sku}{p.category ? ' · ' + p.category : ''}{p.brand ? ' · ' + p.brand : ''}</div></td>
-          <td>{qtyFmt(p.qty)} {p.unit} {p.low && <span className="ml-1 rounded bg-red-100 px-1 text-red-800">Low</span>}</td>
+          <td><b>{qtyFmt(p.qty)}</b> <span className="text-slate-500">{p.unit}</span> {p.low && <span className="ml-1 rounded bg-red-100 px-1 text-red-800">Low</span>}</td>
           <td>{bdt(p.sellingPrice)}</td>
           {admin && <><td>{bdt(p.purchasePrice || 0)}</td><td>{bdt(p.avgCost || 0)}</td><td>{bdt(p.value || 0)}</td>
             <td className="space-x-3 whitespace-nowrap p-2"><button className="underline" onClick={() => edit(p)}>Edit</button><button className="underline" onClick={() => toggle(p)}>{p.isActive ? 'Disable' : 'Enable'}</button></td></>}
