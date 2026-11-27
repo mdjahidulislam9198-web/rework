@@ -6,6 +6,9 @@ import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
 import Account from './pages/Account';
 import Inventory from './pages/Inventory';
+import Pos from './pages/Pos';
+import Customers from './pages/Customers';
+import Sales from './pages/Sales';
 
 // ═══ Session countdown: logs out cleanly when the 6-hour session ends ═══
 function Countdown() {
@@ -28,6 +31,9 @@ function Layout() {
       <header className="flex flex-wrap items-center justify-between gap-2 py-3">
         <nav className="flex gap-1">
           <NavLink to="/" end className={link}>Dashboard</NavLink>
+          <NavLink to="/sell" className={link}>Sell</NavLink>
+          <NavLink to="/sales" className={link}>Sales</NavLink>
+          <NavLink to="/customers" className={link}>Customers</NavLink>
           <NavLink to="/inventory" className={link}>Inventory</NavLink>
           {user?.role === 'ADMIN' && <NavLink to="/users" className={link}>Users</NavLink>}
           <NavLink to="/account" className={link}>Account</NavLink>
@@ -54,6 +60,9 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route element={<RequireAuth />}>
         <Route index element={<Dashboard />} />
+        <Route path="sell" element={<Pos />} />
+        <Route path="sales" element={<Sales />} />
+        <Route path="customers" element={<Customers />} />
         <Route path="inventory" element={<Inventory />} />
         <Route path="users" element={<AdminOnly />} />
         <Route path="account" element={<Account />} />
